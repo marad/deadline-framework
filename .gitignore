@@ -1,0 +1,5 @@
+# Compiled python code
+*.pyc
+
+# Memory files from testing
+*.mem
