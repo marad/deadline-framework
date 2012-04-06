@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
 		self.tools.addAction(snipRenameAction)
 		self.tools.addAction(snipRunAction)
 		self.tools.addAction(snipQueueAction)
-		self.tools.addSeparator()
+		self.tools.addSeparator()		
 		self.tools.addAction(changeViewAction)
 		
 		
