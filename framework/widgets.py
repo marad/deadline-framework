@@ -6,7 +6,7 @@ Created on 03-04-2012
 '''
 
 import sys, traceback, imp, pickle, os, threading
-from threading import RLock
+from threading import Lock
 from utils import Client #@UnresolvedImport
 from PyQt4.QtCore import SIGNAL, Qt, QAbstractListModel, QModelIndex, QSize,\
     QRegExp, QTimer
@@ -18,25 +18,29 @@ from PyQt4.QtGui import QWidget, QVBoxLayout, \
 
 from contextlib import contextmanager
 
-from multiprocessing import Manager
-
 
 ## ======================================================================= ##
 
 class SharedDict(object):
     def __init__(self, d):
         self.dict = d
-        self.lock = RLock()
+        self.lock = Lock()
     
     def __setitem__(self, index, item):
         self.lock.acquire()
         try:
-            return self.dict[index]
+            self.dict[index] = item
         finally:
             self.lock.release()
 
     def __getitem__(self, index):
         return self.dict[index]
+    
+    def __str__(self):
+        return self.dict.__str__()
+    
+    def __repr__(self):
+        return self.dict.__repr__()
 
 ## ======================================================================= ##
 
@@ -512,7 +516,7 @@ class WorkerThread(threading.Thread):
                 self.uiUpdateEvent.set()
 
                 with open('%d.mem' % self.client.port, 'w') as f:
-                    pickle.dump(self.module.mem, f)
+                    pickle.dump(self.module.mem.dict, f)
             except:
                 traceback.print_exc()
                 print "[BŁĄD] Zapisywanie pamięci nieudane!"                
@@ -532,13 +536,16 @@ class Environment(QWidget):
         except:
             sys.stdout.write("[BŁĄD] Bład odczytywania pamięci. Resetuję!\n", name=port)
             self.sharedMemory = {}
+            
+        self.sharedMemory = SharedDict(self.sharedMemory)
+        
         try:
             self.client = Client(port)
         except:
             #print "Brak połączenia z serwerem!"
             #self.client = None
             raise NoServerConnection()
-                
+        
         self.workerThread = None
         self.uiUpdateEvent = threading.Event()
         
@@ -593,8 +600,8 @@ class Environment(QWidget):
         self.actions.append(newSnippetAction)        
         runSnippetAction = QAction(playIcon, "Uruchom skrawek", self)
         runSnippetAction.setShortcut('F9')
-        self.actions.append(runSnippetAction)        
-
+        self.actions.append(runSnippetAction)
+        
         layout = QHBoxLayout()
         layout.addWidget(self.mdi)
         layout.addWidget(self.strategies)
@@ -673,6 +680,14 @@ class Environment(QWidget):
         w = self.mdi.activeSubWindow().widget()
         if hasattr(w, 'runCode') and callable(w.runCode):
             self.workerThread.snippetQueue.append( (w, self.context) )
+        
+    def renameSnippet(self, title):
+        
+        print self.mdi.activeSubWindow().widget()
+        if self.mdi.activeSubWindow():
+            self.mdi.activeSubWindow().setWindowTitle(title)
+        #if hasattr(w, 'runCode') and callable(w.runCode):
+            
             
     def cleanup(self):
         self.client.close()

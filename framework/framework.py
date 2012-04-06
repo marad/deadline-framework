@@ -65,13 +65,16 @@ class MainWindow(QMainWindow):
 		closeEnvIcon = QIcon(QPixmap("img/envClose.png"))
 		snipNewIcon = QIcon(QPixmap("img/snipNew.png"))
 		snipRunIcon = QIcon(QPixmap("img/snipRun.png"))
-		snipQueueIcon = QIcon(QPixmap("img/snipQueue.png"))		
+		snipQueueIcon = QIcon(QPixmap("img/snipQueue.png"))
+		snipRenameIcon = QIcon(QPixmap("img/snipRename.png"))		
 		
 		newEnvAction = QAction(newEnvIcon, u"Nowe środowisko", self)
 		closeEnvAction = QAction(closeEnvIcon, u"Zamknij środowisko", self)
 		snipNewAction = QAction(snipNewIcon, u"Nowy snippet (CTRL+N)", self)
 		snipRunAction = QAction(snipRunIcon, u"Uruchom snippet (CTRL+R)", self)
 		snipQueueAction = QAction(snipQueueIcon, u"Zakolejkuj snippet (CTRL+Q)", self)
+		snipRenameAction = QAction(snipRenameIcon, u"Zmień tytuł snippetu (CTRL+T)", self)
+		changeViewAction = QAction(u"MDI <-> Taby", self)
 		
 		
 		snipNewAction.setShortcut('CTRL+N')
@@ -84,14 +87,20 @@ class MainWindow(QMainWindow):
 		self.tools.addAction(closeEnvAction)
 		self.tools.addSeparator()
 		self.tools.addAction(snipNewAction)
+		self.tools.addAction(snipRenameAction)
 		self.tools.addAction(snipRunAction)
 		self.tools.addAction(snipQueueAction)
+		self.tools.addSeparator()
+		self.tools.addAction(changeViewAction)
+		
 		
 		self.connect(newEnvAction, SIGNAL('triggered()'), self.newEnvironment)
 		self.connect(closeEnvAction, SIGNAL('triggered()'), self.closeEnvironment)
 		self.connect(snipNewAction, SIGNAL('triggered()'), self.newSnippet)
 		self.connect(snipRunAction, SIGNAL('triggered()'), self.runSnippet)
 		self.connect(snipQueueAction, SIGNAL('triggered()'), self.queueSnippet)
+		self.connect(snipRenameAction, SIGNAL('triggered()'), self.renameSnippet)
+		self.connect(changeViewAction, SIGNAL('triggered()'), self.changeView)
 		
 	def addEnvironment(self, port):
 		try:
@@ -132,6 +141,19 @@ class MainWindow(QMainWindow):
 	def queueSnippet(self):
 		self.tabWidget.currentWidget().queueSnippet()
 		
+	def renameSnippet(self):
+		
+		window = self.tabWidget.currentWidget().mdi.activeSubWindow()
+		title, ok = QInputDialog.getText(self, u'Tytuł', u'Wpisz nowy tytuł dla okna:')
+		
+		if ok and title:
+			window.setWindowTitle( unicode(title) )
+			#self.tabWidget.currentWidget().renameSnippet(unicode(title))
+	
+	def changeView(self):
+		tab = self.tabWidget.currentWidget()
+		if tab:
+			tab.mdi.setViewMode( not tab.mdi.viewMode() )
 		
 if __name__ == '__main__':
 	try:
