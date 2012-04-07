@@ -17,6 +17,7 @@ from PyQt4.QtGui import QWidget, QVBoxLayout, \
 	QMdiArea, QAction, QTextCursor
 
 from contextlib import contextmanager
+from new import instancemethod
 
 
 ## ======================================================================= ##
@@ -290,7 +291,7 @@ class Strategies(QWidget):
 		self.emit(SIGNAL('strategyChanged'), old, self.activeStrategy)
 
 	def _verifyModule(self, module):
-		return hasattr(module, 'name') and hasattr(module, 'work')
+		return hasattr(module, 'work')
 
 	def _compileCode(self, path):
 		with open(path) as f:
@@ -309,7 +310,12 @@ class Strategies(QWidget):
 
 			with optional():
 				if self._verifyModule(module.worker):
-					self.modules[module.worker.name()] = module
+					if hasattr(module.worker,'name'):
+						name = module.worker.name()
+					else:
+						name = os.path.basename(path)
+						module.worker.name = instancemethod(lambda self: name, module.worker, object)
+					self.modules[name] = module
 					module.worker.__path__ = path
 					return module.worker
 		return None
@@ -640,7 +646,11 @@ class Environment(QWidget):
 			new.widget = widget
 			new.client = self.client
 
-			with output(self.port): new.install()
+			try:
+				with output(self.port): new.install()
+			except:
+				traceback.print_exc()
+
 			widget.parent().adjustSize()
 
 			self.workerThread = WorkerThread(self.client, new, self.uiUpdateEvent)
