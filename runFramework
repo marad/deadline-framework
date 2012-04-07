@@ -1,0 +1,3 @@
+#!/bin/sh
+cd framework
+nohup python framework.py $@ 2>>nohup.out &
