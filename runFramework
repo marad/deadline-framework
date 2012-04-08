@@ -1,3 +1,5 @@
 #!/bin/sh
-cd framework
-nohup python framework.py $@ 2>>nohup.out &
+
+WORKDIR=$(dirname $0)
+cd "$WORKDIR/framework"
+nohup /usr/bin/python framework.py $@ 2>>nohup.out &
