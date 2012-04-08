@@ -1,0 +1,2 @@
+#!/bin/sh
+python -i lib/frame.py $@
