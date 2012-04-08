@@ -160,7 +160,7 @@ if __name__ == '__main__':
 		app = QApplication(sys.argv)
 		
 		mainWindow = MainWindow()
-		#mainWindow.addEnvironment(12345)	
+		mainWindow.addEnvironment(12345)	
 		mainWindow.setVisible(True)	
 		
 		app.exec_()
