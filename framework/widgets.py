@@ -327,7 +327,6 @@ def output(name, optional=False):
 	old = threading.current_thread().name
 	try:
 		threading.current_thread().name = name
-		#print threading.current_thread().name
 		yield
 	except AttributeError:
 		if not optional:
@@ -336,7 +335,6 @@ def output(name, optional=False):
 		traceback.print_exc()
 	finally:
 		threading.current_thread().name = old
-		#print threading.current_thread().name
 
 @contextmanager
 def optional():

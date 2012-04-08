@@ -4,8 +4,9 @@ context = {}
 
 import sys, pickle, traceback, os
 
-sys.path.append("../")
-sys.path.append("../lib/")
+sys.path.insert(0, './')
+sys.path.insert(1, "../")
+sys.path.insert(2, "../lib/")
 
 from widgets import MultiThreadedOutput, NoServerConnection
 
