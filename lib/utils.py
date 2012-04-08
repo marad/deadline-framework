@@ -6,7 +6,7 @@ LOGIN		 = 'morti'
 PASSWORD = 'haslo'
 HOST		 = 'localhost' #'universum.dl24'
 
-class DeadlineError(BaseException):
+class DeadlineError(Exception):
 
 	def __init__(self, err=0, msg="unknown error"):
 		self.err = err
@@ -56,8 +56,9 @@ class Socket(object):
 			return self.readLine()
 		except:
 			raise StopIteration()
-	
+
 	def close(self):
+		self.socket.shutdown(socket.SHUT_RDWR)
 		self.socket.close()
 
 #-----------------------------------------------------------------------

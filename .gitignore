@@ -3,3 +3,6 @@
 
 # Memory files from testing
 *.mem
+
+# output from batched runs
+*.out
