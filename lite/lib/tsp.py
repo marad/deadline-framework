@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import itertools, math, random
-from pygraph.classes.graph import graph as Graph
 
-def distanceTaxicab(va,vb) :
-	return sum([abs(d[0]-d[1]) for d in zip(e[0],e[1])])
+def taxicab(va,vb) :
+	#return sum([abs(d[0]-d[1]) for d in zip(va,vb)])
+	return abs(va[0]-vb[0]) + abs(va[1]-vb[1])
 
-def distanceEuclid(va,vb) :
-	return math.sqrt(sum([(d[0]-d[1])**2 for d in zip(va,vb)]))
+def euclid(va,vb) :
+	#return math.sqrt(sum([(d[0]-d[1])**2 for d in zip(va,vb)]))
+	return math.hypot(va[0]-vb[0], va[1]-vb[1])
 
 #-----------------------------------------------------------------------
 
 class GridGraph(object) :
 
-	def __init__(self,metric) :
+	def __init__(self,metric=taxicab) :
 		self._metric = metric
 		self._nodes = []
 
@@ -71,12 +72,14 @@ def nearest(graph) :
 
 if __name__=='__main__' :
 
-	gr = GridGraph(distanceEuclid)
-	gr.add_node( (0,0) )
-	gr.add_node( (2,0) )
-	gr.add_node( (2,2) )
-	gr.add_node( (3,3) )
-	gr.add_node( (1,2) )
+	import sys
+	N = int(sys.argv[1])
+
+	gr = GridGraph(metric=euclid)
+	for i in range(0,N) :
+		x = random.randint(0,100)
+		y = random.randint(0,100)
+		gr.add_node( (x,y) )
 
 	dist,tour = nearest(gr)
 	print "NN route: {}".format(dist)
