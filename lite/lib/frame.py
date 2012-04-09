@@ -137,10 +137,6 @@ def remove() :
 		except Exception as e :
 			print "Error: {}".format(e)
 
-def dump() :
-	if thread :
-		for line in thread.history : print line
-
 #-----------------------------------------------------------------------
 
 import traceback
